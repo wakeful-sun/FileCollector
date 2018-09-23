@@ -1,5 +1,4 @@
-﻿using FileCollector.Common;
-using System;
+﻿using System;
 
 namespace FileCollector.Worker
 {
@@ -25,6 +24,16 @@ namespace FileCollector.Worker
             DoInColor(text.PrintLine, color);
         }
 
+        public static void PrintLineInYellow(this string text)
+        {
+            text.PrintLineInColor(ConsoleColor.Yellow);
+        }
+
+        public static void PrintLineInGreen(this string text)
+        {
+            text.PrintLineInColor(ConsoleColor.Green);
+        }
+
         static void DoInColor(Action action, ConsoleColor color)
         {
             ConsoleColor originalColor = Console.ForegroundColor;
@@ -37,35 +46,6 @@ namespace FileCollector.Worker
             {
                 Console.ForegroundColor = originalColor;
             }
-        }
-
-        public static void PrintLineInYellow(this string text)
-        {
-            text.PrintLineInColor(ConsoleColor.Yellow);
-        }
-
-        public static void PrintLineInGreen(this string text)
-        {
-            text.PrintLineInColor(ConsoleColor.Green);
-        }
-
-        public static void Print(this Result result)
-        {
-            switch (result.ResultType)
-            {
-                case ResultType.Failure:
-                    $"\t [FAILED] {Environment.NewLine} {result.Message}".PrintInColor(ConsoleColor.Red);
-                    break;
-                case ResultType.Success:
-                    "\t [FINISHED]".PrintInColor(ConsoleColor.DarkGreen);
-                    break;
-                case ResultType.Warning:
-                    $"\t [WARNING] {Environment.NewLine} {result.Message}".PrintInColor(ConsoleColor.Yellow);
-                    break;
-                default:
-                    throw new NotImplementedException($"No implementation found for {result.ResultType} result.");
-            }
-            "".PrintLine();
         }
     }
 }

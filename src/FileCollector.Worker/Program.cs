@@ -22,7 +22,7 @@ namespace FileCollector.Worker
             for (int i = 0; i < configurations.Length; i++)
             {
                 separatorLine.PrintLineInGreen();
-                $"{i + 1}/{configurations.Length} ".PrintInColor(ConsoleColor.Green);
+                $"{i + 1}/{configurations.Length} ".PrintLineInGreen();
                 Process(configurations[i]);
             }
 
@@ -55,7 +55,7 @@ namespace FileCollector.Worker
             var validationResult = configurationValidator.Validate(config);
             if (!validationResult.IsValid)
             {
-                $"\t [WARNING]".PrintLineInColor(ConsoleColor.Yellow);
+                $"\t [WARNING]".PrintLineInYellow();
                 $" Provider {config.Name} configuration is not valid".PrintLineInYellow();
                 $"\t- {string.Join(Environment.NewLine + "\t- ", validationResult.Errors.Select(x => x.ErrorMessage))}".PrintLineInYellow();
                 return;
