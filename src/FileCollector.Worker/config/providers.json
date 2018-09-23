@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Provider No.1",
+        "active": false,
+        "type": "gmail",
+        "email": "a@a.com",
+        "fileConfig": {
+            "sourceFileName": "",
+            "sourceDirectory": "",
+            "targetFileName": "test_a.xlsx",
+            "targetDirectory": "D:/test/"
+        }
+    },
+    {
+        "name": "Provider No.2",
+        "active": true,
+        "type": "file",
+        "email": "",
+        "fileConfig": {
+            "sourceFileName": "price_*.xlsx",
+            "sourceDirectory": "D:/test/input/",
+            "targetFileName": "test_b.xlsx",
+            "targetDirectory": "D:/test/output"
+        }
+    }
+]
