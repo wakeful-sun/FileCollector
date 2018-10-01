@@ -1,1 +1,0 @@
-﻿Put GMAIL credentials.json into this directory.

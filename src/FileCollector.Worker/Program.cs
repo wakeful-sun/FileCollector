@@ -1,9 +1,6 @@
 ﻿using FileCollector.Common;
 using FileCollector.Common.Config;
-using FileCollector.FileSystem;
-using FileCollector.Gmail;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,37 +8,28 @@ namespace FileCollector.Worker
 {
     class Program
     {
-        static Dictionary<ProviderType, Func<IFileProvider>> providerFactories = RegisterProviders();
         static ProviderConfigurationValidator configurationValidator = new ProviderConfigurationValidator();
         static string separatorLine = new string('-', 70);
 
         static void Main(string[] args)
         {
-            ProviderConfiguration[] configurations = ProviderConfigurations.ReadFromJson(@"config\providers.json");
+            Application app = Application.Create();
 
-            for (int i = 0; i < configurations.Length; i++)
+            for (int i = 0; i < app.Providers.Length; i++)
             {
                 separatorLine.PrintLineInGreen();
-                $"{i + 1}/{configurations.Length} ".PrintLineInGreen();
-                Process(configurations[i]);
+                $"{i + 1}/{app.Providers.Length} ".PrintLineInGreen();
+
+                Process(app.Providers[i], x => app.CreateFileProviderFor(x));
             }
 
             separatorLine.PrintLineInGreen();
             Console.WriteLine();
             "Complited. Press any key to close.".PrintLine();
-            Console.ReadKey();
+            //Console.ReadKey();
         }
 
-        static Dictionary<ProviderType, Func<IFileProvider>> RegisterProviders()
-        {
-            return new Dictionary<ProviderType, Func<IFileProvider>>
-            {
-                { ProviderType.File, () => new FileSystemProvider() },
-                { ProviderType.Gmail, () => new GmailAttachmentProvider() }
-            };
-        }
-
-        static void Process(ProviderConfiguration config)
+        static void Process(ProviderConfiguration config, Func<ProviderType, IFileProvider> fileProviderFactory)
         {
             $"Processing file for [{config.Name}] ...".Print();
 
@@ -61,12 +49,12 @@ namespace FileCollector.Worker
                 return;
             }
 
-            Func<IFileProvider> fileProviderFactory = providerFactories.GetValueOrDefault(config.Type);
-            if (fileProviderFactory != null)
+            IFileProvider fileProvider = fileProviderFactory(config.Type);
+            if (fileProvider != null)
             {
                 try
                 {
-                    Task<Result> resultTask = fileProviderFactory().Process(config);
+                    Task<Result> resultTask = fileProvider.Process(config);
                     Result result = resultTask.GetAwaiter().GetResult();
 
                     result.Print();
