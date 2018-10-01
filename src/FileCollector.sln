@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileCollector.Worker", "Fil
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileCollector.Common", "FileCollector.Common\FileCollector.Common.csproj", "{8DC722E6-E908-4E94-AA41-48BD02D99926}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{2CD8FF38-F624-40B1-8E45-37FBD87ABAB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileCollector.Common.Tests", "Tests\FileCollector.Common.Tests\FileCollector.Common.Tests.csproj", "{5A57E31D-CB6D-4F71-A8AA-ABEF30CCA81D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +39,10 @@ Global
 		{8DC722E6-E908-4E94-AA41-48BD02D99926}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DC722E6-E908-4E94-AA41-48BD02D99926}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DC722E6-E908-4E94-AA41-48BD02D99926}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A57E31D-CB6D-4F71-A8AA-ABEF30CCA81D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A57E31D-CB6D-4F71-A8AA-ABEF30CCA81D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A57E31D-CB6D-4F71-A8AA-ABEF30CCA81D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A57E31D-CB6D-4F71-A8AA-ABEF30CCA81D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +50,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{259E4BB4-205A-442F-B6D7-775E3AD8E610} = {01D969B7-9795-43F6-8A31-32AC72507D69}
 		{9773573C-8692-4378-A4BC-4F4A6D9AFA0E} = {01D969B7-9795-43F6-8A31-32AC72507D69}
+		{5A57E31D-CB6D-4F71-A8AA-ABEF30CCA81D} = {2CD8FF38-F624-40B1-8E45-37FBD87ABAB4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {81B5A2F7-E87F-40A0-A45E-4ACA5EC06CD6}

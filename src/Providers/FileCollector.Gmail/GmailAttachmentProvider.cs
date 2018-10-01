@@ -46,7 +46,7 @@ namespace FileCollector.Gmail
             });
         }
 
-        public Task<Result> Process(ProviderConfiguration configuration)
+        public async Task<Result> Process(ProviderConfiguration configuration)
         {
             Func<MessagePart, bool> fileNameFilter = x => !string.IsNullOrWhiteSpace(x.Filename);
 
@@ -55,22 +55,25 @@ namespace FileCollector.Gmail
             if (!string.IsNullOrWhiteSpace(configuration.FileConfig.SourceFileName))
             {
                 messagesRequest.Q += $" filename:{configuration.FileConfig.SourceFileName}";
-                //TODO: apply pattern search
-                fileNameFilter = x => !string.IsNullOrWhiteSpace(x.Filename) && x.Filename == configuration.FileConfig.SourceFileName;
+
+                fileNameFilter = x =>
+                    !string.IsNullOrWhiteSpace(x.Filename) &&
+                    x.Filename.MatchPattern(configuration.FileConfig.SourceFileName);
             }
 
-            IList<Message> messages = messagesRequest.Execute().Messages;
+            ListMessagesResponse messagesResponse = await messagesRequest.ExecuteAsync();
+            IList<Message> messages = messagesResponse.Messages;
             if (messages != null)
             {
                 for (int i = 0; i < messages.Count; i++)
                 {
                     if (i == 0)
                     {
-                        SaveAttachement(messages[0].Id, configuration.FileConfig, fileNameFilter);
+                        await SaveAttachement(messages[0].Id, configuration.FileConfig, fileNameFilter);
                         Console.WriteLine("Attachement saved");
                     }
                     Console.WriteLine("Message marked as READ.");
-                    SetRead(messages[i].Id);
+                    await SetRead(messages[i].Id);
                 }
             }
             else
@@ -78,12 +81,12 @@ namespace FileCollector.Gmail
                 Console.Write("No new message");
             }
 
-            return Task.FromResult(Result.Ok());
+            return Result.Ok();
         }
 
-        void SaveAttachement(string messageId, FileConfiguration config, Func<MessagePart, bool> fileNameFilter)
+        async Task SaveAttachement(string messageId, FileConfiguration config, Func<MessagePart, bool> fileNameFilter)
         {
-            Message message = service.Users.Messages.Get(userId, messageId).Execute();
+            Message message = await service.Users.Messages.Get(userId, messageId).ExecuteAsync();
 
             List<MessagePart> parts = message.Payload.Parts.Where(fileNameFilter).ToList();
 
@@ -92,9 +95,8 @@ namespace FileCollector.Gmail
                 MessagePart part = parts[i];
                 if (i == 0)
                 {
-                    Console.Write($"-->{part.Filename}<--");
                     string attId = part.Body.AttachmentId;
-                    MessagePartBody attachPart = service.Users.Messages.Attachments.Get(userId, messageId, attId).Execute();
+                    MessagePartBody attachPart = await service.Users.Messages.Attachments.Get(userId, messageId, attId).ExecuteAsync();
 
                     // Converting from RFC 4648 base64 to base64url encoding
                     // see http://en.wikipedia.org/wiki/Base64#Implementations_and_history
@@ -102,7 +104,14 @@ namespace FileCollector.Gmail
                     attachData = attachData.Replace('_', '/');
 
                     byte[] data = Convert.FromBase64String(attachData);
-                    File.WriteAllBytes(Path.Combine(config.TargetDirectory, config.TargetFileName/*part.Filename*/), data);
+
+                    string destinationFilePath = Path.Combine(config.TargetDirectory, config.TargetFileName);
+                    if (new FileInfo(destinationFilePath).Exists)
+                    {
+                        File.Delete(destinationFilePath);
+                    }
+
+                    File.WriteAllBytes(destinationFilePath/*part.Filename*/, data);
                     Console.WriteLine("File saved");
                 }
                 else
@@ -112,7 +121,7 @@ namespace FileCollector.Gmail
             }
         }
 
-        public void SetRead(string messageId)
+        Task SetRead(string messageId)
         {
             ModifyMessageRequest mods = new ModifyMessageRequest
             {
@@ -120,7 +129,7 @@ namespace FileCollector.Gmail
             };
             //TODO: add imported tag and check
 
-            service.Users.Messages.Modify(mods, userId, messageId).Execute();
+            return service.Users.Messages.Modify(mods, userId, messageId).ExecuteAsync();
         }
 
 
