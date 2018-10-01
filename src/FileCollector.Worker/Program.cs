@@ -13,19 +13,20 @@ namespace FileCollector.Worker
 
         static void Main(string[] args)
         {
-            Application app = Application.Create();
-
-            for (int i = 0; i < app.Providers.Length; i++)
+            using (Application app = Application.Create())
             {
+                for (int i = 0; i < app.Providers.Length; i++)
+                {
+                    separatorLine.PrintLineInGreen();
+                    $"{i + 1}/{app.Providers.Length} ".PrintLineInGreen();
+
+                    Process(app.Providers[i], x => app.CreateFileProviderFor(x));
+                }
+
                 separatorLine.PrintLineInGreen();
-                $"{i + 1}/{app.Providers.Length} ".PrintLineInGreen();
-
-                Process(app.Providers[i], x => app.CreateFileProviderFor(x));
+                Console.WriteLine();
+                "Complited. Press any key to close.".PrintLine();
             }
-
-            separatorLine.PrintLineInGreen();
-            Console.WriteLine();
-            "Complited. Press any key to close.".PrintLine();
             //Console.ReadKey();
         }
 
@@ -67,7 +68,7 @@ namespace FileCollector.Worker
             }
             else
             {
-                $"Invalid configuration entry - not supported provider type [{config.Type}] for [{config.Name}] provider.".PrintLine();
+                $"ERROR: provider type [{config.Type}] for [{config.Name}] is not initialized.".PrintLineInColor(ConsoleColor.Red);
             }
         }
     }

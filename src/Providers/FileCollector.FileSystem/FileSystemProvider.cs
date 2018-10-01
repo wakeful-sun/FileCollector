@@ -28,11 +28,7 @@ namespace FileCollector.FileSystem
                     return Task.FromResult(Result.Error(error));
             }
 
-            string destinationFilePath = Path.Combine(fileConfig.TargetDirectory, fileConfig.TargetFileName);
-            if (new FileInfo(destinationFilePath).Exists)
-            {
-                File.Delete(destinationFilePath);
-            }
+            string destinationFilePath = FileOperation.PrepareDestination(fileConfig);
 
             File.Move(sourceFilePath, destinationFilePath);
 

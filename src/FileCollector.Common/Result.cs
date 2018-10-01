@@ -11,7 +11,7 @@
             Message = message;
         }
 
-        public static Result Ok() { return new Result(ResultType.Success); }
+        public static Result Ok(string message = null) { return new Result(ResultType.Success, message); }
         public static Result Error(string message) { return new Result(ResultType.Failure, message); }
         public static Result Warning(string message) { return new Result(ResultType.Warning, message); }
     }

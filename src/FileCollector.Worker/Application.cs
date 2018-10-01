@@ -3,18 +3,21 @@ using FileCollector.Common.Config;
 using FileCollector.FileSystem;
 using FileCollector.Gmail;
 using Microsoft.Extensions.Configuration;
+using System;
 
 namespace FileCollector.Worker
 {
-    class Application
+    class Application : IDisposable
     {
         readonly FileProviderRepository fileProviderRepository;
+        readonly IDisposable[] services;
 
         public ProviderConfiguration[] Providers { get; }
 
-        private Application(ProviderConfiguration[] providers, FileProviderRepository fileProviderRepository)
+        private Application(ProviderConfiguration[] providers, FileProviderRepository fileProviderRepository, params IDisposable[] services)
         {
             this.fileProviderRepository = fileProviderRepository;
+            this.services = services;
             Providers = providers;
         }
 
@@ -39,10 +42,25 @@ namespace FileCollector.Worker
             GmailSettings gmailSettings = config.GetSection("gmail").Get<GmailSettings>();
 
             FileProviderRepository repository = new FileProviderRepository();
-            repository.Register(ProviderType.File, () => new FileSystemProvider());
-            repository.Register(ProviderType.Gmail, () => new GmailAttachmentProvider(gmailSettings));
 
-            return new Application(providerSettings.Providers, repository);
+            FileSystemProvider fileSystemProvider = new FileSystemProvider();
+            GmailAttachmentProvider gmailAttachmentProvider = new GmailAttachmentProvider(gmailSettings);
+
+            repository.Register(ProviderType.File, () => fileSystemProvider);
+            repository.Register(ProviderType.Gmail, () => gmailAttachmentProvider);
+
+            return new Application(providerSettings.Providers, repository, gmailAttachmentProvider);
+        }
+
+        public void Dispose()
+        {
+            if (services != null)
+            {
+                foreach (var service in services)
+                {
+                    service.Dispose();
+                }
+            }
         }
     }
 }

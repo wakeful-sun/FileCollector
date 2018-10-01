@@ -13,7 +13,7 @@ namespace FileCollector.Worker
                     $"\t [FAILED] {Environment.NewLine} {result.Message}".PrintInColor(ConsoleColor.Red);
                     break;
                 case ResultType.Success:
-                    "\t [FINISHED]".PrintInColor(ConsoleColor.DarkGreen);
+                    $"\t [FINISHED] {result.Message}".PrintInColor(ConsoleColor.DarkGreen);
                     break;
                 case ResultType.Warning:
                     $"\t [WARNING] {Environment.NewLine} {result.Message}".PrintInColor(ConsoleColor.Yellow);
