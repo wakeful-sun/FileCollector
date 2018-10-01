@@ -27,7 +27,7 @@ namespace FileCollector.Worker
                 Console.WriteLine();
                 "Complited. Press any key to close.".PrintLine();
             }
-            //Console.ReadKey();
+            Console.ReadKey();
         }
 
         static void Process(ProviderConfiguration config, Func<ProviderType, IFileProvider> fileProviderFactory)
